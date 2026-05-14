@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends,HTTPException
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from db.database import SessionLocal, engine
 import models.models as models, schemas.schemas as schemas
@@ -14,6 +15,10 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@app.get("/")
+def redirect_to_docs():
+    return RedirectResponse(url="/docs")
 
 @app.post("/books", response_model=schemas.BookResponse)
 def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
