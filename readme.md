@@ -28,7 +28,6 @@ Connects to PostgreSQL database
 Runs in development mode with auto-reload
 Syncs local code into container for live updates
 📄 Docker Compose Configuration
-version: '3.8'
 
 services:
   db:
@@ -41,7 +40,7 @@ services:
     ports:
       - ${DB_PORT_FROM}:${DB_PORT_TO}
     volumes:
-      - postgres_data:${DATABASE_PATH}
+      - ${DATABASE_PATH}:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -49,21 +48,16 @@ services:
       retries: 5
 
   web:
-    build: .
+    image: <image name >
     container_name: book-library-api
     command: uvicorn main:app --host ${API_HOST} --port ${API_PORT} --reload
     ports:
       - ${API_PORT_FROM}:${API_PORT}
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${DB_PORT_FROM}/${POSTGRES_DB}
-    volumes:
-      - .:/app
     depends_on:
       db:
         condition: service_healthy
-
-volumes:
-  postgres_data:
 🔐 Environment Variables
 
 Create a .env file in the project root with the following variables:
