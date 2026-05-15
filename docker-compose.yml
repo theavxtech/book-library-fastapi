@@ -11,7 +11,7 @@ services:
     ports:
       - ${DB_PORT_FROM}:${DB_PORT_TO}
     volumes:
-      - postgres_data:${DATABASE_PATH}
+      - ${DATABASE_PATH}:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -31,6 +31,3 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-volumes:
-  - postgres_data:${DATABASE_PATH}
