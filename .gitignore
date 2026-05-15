@@ -1,5 +1,13 @@
+# Python
 venv/
 __pycache__/
-*.db
 *.pyc
+
+# Database
+*.db
+
+# Environment variables (keep this — correct to ignore)
 .env
+
+# Misc
+bleh.txt

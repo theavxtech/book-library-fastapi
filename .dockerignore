@@ -1,0 +1,23 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment & secrets
+.env
+*.env.local
+
+# Git
+.git/
+.gitignore
+
+# Misc
+*.db
+*.log
+bleh.txt
+readme.md
+
+# Docker files (not needed inside image)
+docker-compose.yml
+.dockerignore

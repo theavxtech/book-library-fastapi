@@ -5,9 +5,11 @@ from db.database import SessionLocal, engine
 import models.models as models, schemas.schemas as schemas
 from typing import Optional
 
-models.Base.metadata.create_all(bind=engine)
-
 app = FastAPI()
+
+@app.on_event("startup")
+def startup():
+    models.Base.metadata.create_all(bind=engine)
 
 def get_db():
     db = SessionLocal()

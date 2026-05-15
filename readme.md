@@ -1,13 +1,114 @@
- sudo -u postgres psql                  to start reading psql commands
-CREATE DATABASE books;           to create the db beforehand
-\q                                      to quit the psql queiries
+📦 Project Setup Documentation
 
-uvicorn main:app --reload --port 8001   to run fastapi
+This project uses Docker Compose to run a FastAPI-based web service along with a PostgreSQL database.
 
+🚀 Prerequisites
 
+Before running the project, ensure you have:
 
+Docker installed → https://docs.docker.com/get-docker/
+Docker Compose installed → https://docs.docker.com/compose/install/
+🐳 Services Overview
 
+The application consists of two main services:
 
-1)project created using fastapi with 4 apis
-2)converted db from sqlite to postgre
-3)proper foldering structure
+1. Database Service (db)
+
+Uses PostgreSQL 15.
+
+Stores application data
+Persists data using Docker volumes
+Includes health checks to ensure readiness before the API starts
+
+2. Web Service (web)
+
+FastAPI application served using Uvicorn.
+
+Connects to PostgreSQL database
+Runs in development mode with auto-reload
+Syncs local code into container for live updates
+📄 Docker Compose Configuration
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: book-library-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - ${DB_PORT_FROM}:${DB_PORT_TO}
+    volumes:
+      - postgres_data:${DATABASE_PATH}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: book-library-api
+    command: uvicorn main:app --host ${API_HOST} --port ${API_PORT} --reload
+    ports:
+      - ${API_PORT_FROM}:${API_PORT}
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${DB_PORT_FROM}/${POSTGRES_DB}
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+🔐 Environment Variables
+
+Create a .env file in the project root with the following variables:
+
+🗄️ Database Configuration
+Variable	Description
+POSTGRES_USER	Username for PostgreSQL
+POSTGRES_PASSWORD	Password for PostgreSQL
+POSTGRES_DB	Database name
+DB_HOST	Database host (usually db in Docker)
+DB_PORT_FROM	Host port for database (e.g., 5432)
+DB_PORT_TO	Container port for database (usually 5432)
+🌐 API Configuration
+Variable	Description
+API_HOST	Host for FastAPI (e.g., 0.0.0.0)
+API_PORT_FROM	Host machine port (e.g., 8000)
+API_PORT	Container port for FastAPI
+RELOAD	Enable auto-reload (true for development)
+🔗 URLs
+Variable	Description
+DATABASE_URL	Full database connection string (optional if generated in compose)
+
+Example:
+
+DATABASE_URL=postgresql://user:password@db:5432/dbname
+📦 Docker Volumes
+Variable	Description
+DATABASE_PATH	Path inside container where PostgreSQL data is stored (e.g., /var/lib/postgresql/data)
+▶️ How to Run the Project
+1. Create .env file
+
+Fill all required environment variables.
+
+2. Build and start containers
+docker-compose up --build
+3. Access the application
+API: http://localhost:API_PORT_FROM
+Database runs internally via Docker network (db service)
+🧠 Important Notes
+The web service waits for the database to be healthy before starting.
+Data is persisted using Docker volume postgres_data.
+Code changes are reflected instantly due to volume mounting (.:/app).
+🧹 Stop the project
+docker-compose down
+
+To remove volumes as well:
+
+docker-compose down -v
