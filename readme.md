@@ -54,7 +54,7 @@ services:
     ports:
       - ${API_PORT_FROM}:${API_PORT}
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${DB_PORT_FROM}/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${DB_PORT_TO}/${POSTGRES_DB}
     depends_on:
       db:
         condition: service_healthy
