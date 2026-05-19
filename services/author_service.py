@@ -23,11 +23,23 @@ class AuthorService:
             birth_year=payload.birth_year
         )
     
+    def get_all(self, page: int, size: int) -> dict:
+        skip = (page - 1) * size
+        items = self.repo.list(skip=skip, limit=size)
+        total = self.repo.count()
+        pages = -(-total // size)
+        return {
+            "items": items,
+            "total": total,
+            "page": page,
+            "size": size,
+            "pages": pages
+        }
+    
     def get_or_404(self, author_id: str) -> Author:
         author = self.repo.get_by_author_id(author_id)
         if not author:
             raise HTTPException(status_code=404, detail="Author not found")
         return author
 
-    def get_all(self) -> list[Author]:
-        return self.repo.list()
+    

@@ -5,9 +5,21 @@ from sqlalchemy.orm import Session
 from db.database import SessionLocal
 from services.author_service import AuthorService
 from schemas.author import AuthorCreate, AuthorResponse
-from utils.dependencies import get_db
+from utils.dependencies import get_db, Pagination
+from schemas import PaginatedResponse
+
 
 router = APIRouter(prefix="/authors", tags=["authors"])
+
+def get_author_service(db: Session = Depends(get_db)) -> AuthorService:
+    return AuthorService(db)
+
+@router.get("", response_model=PaginatedResponse[AuthorResponse])
+def get_authors(
+    pagination: Pagination = Depends(Pagination),
+    service: AuthorService = Depends(get_author_service)
+):
+    return service.get_all(page=pagination.page, size=pagination.size)
 
 def get_author_service(db: Session = Depends(get_db)) -> AuthorService:
     return AuthorService(db)
@@ -31,3 +43,4 @@ def get_author(
     service: AuthorService = Depends(get_author_service)
 ):
     return service.get_or_404(author_id)
+

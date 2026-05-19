@@ -13,6 +13,9 @@ class BaseRepository(Generic[ModelT]):
 
     def get(self, id: int) -> ModelT | None:
         return self.session.get(self.model, id)
+    
+    def count(self) -> int:
+        return self.session.query(self.model).count()
 
     def list(self, skip: int = 0, limit: int = 100) -> list[ModelT]:
         return self.session.query(self.model).offset(skip).limit(limit).all()

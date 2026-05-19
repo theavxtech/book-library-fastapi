@@ -6,9 +6,20 @@ from sqlalchemy.orm import Session
 from db.database import SessionLocal
 from services.book_service import BookService
 from schemas.book import BookCreate, BookResponse , BookSearch
-from utils.dependencies import get_db
+from utils.dependencies import get_db, Pagination
+from schemas import PaginatedResponse
 
 router = APIRouter(prefix="/books", tags=["books"])
+
+def get_book_service(db: Session = Depends(get_db)) -> BookService:
+    return BookService(db)
+
+@router.get("", response_model=PaginatedResponse[BookResponse])
+def get_books(
+    pagination: Pagination = Depends(Pagination),
+    service: BookService = Depends(get_book_service)
+):
+    return service.get_all(page=pagination.page, size=pagination.size)
 
 def get_book_service(db: Session = Depends(get_db)) -> BookService:
     return BookService(db)

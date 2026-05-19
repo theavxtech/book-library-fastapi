@@ -21,8 +21,18 @@ class BookService:
             author_id=author.author_id
         )
 
-    def get_all(self) -> list[Book]:
-        return self.repo.list()
+    def get_all(self, page: int, size: int) -> dict:
+        skip = (page - 1) * size
+        items = self.repo.list(skip=skip, limit=size)
+        total = self.repo.count()
+        pages = -(-total // size)  # ceiling division
+        return {
+            "items": items,
+            "total": total,
+            "page": page,
+            "size": size,
+            "pages": pages
+        }
 
     def get_or_404(self, book_id: int) -> Book:
         book = self.repo.get(book_id)
