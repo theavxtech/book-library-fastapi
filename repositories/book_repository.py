@@ -14,7 +14,7 @@ class BookRepository(BaseRepository[Book]):
         self,
         book_id: int | None = None,
         title: str | None = None,
-        author_name: str | None = None,
+        author_id: str | None = None,
         year: int | None = None,
     ) -> list[Book]:
         query = self.session.query(Book).join(Author)
@@ -23,8 +23,8 @@ class BookRepository(BaseRepository[Book]):
             query = query.filter(Book.id == book_id)
         if title is not None:
             query = query.filter(Book.title == title)
-        if author_name is not None:
-            query = query.filter(Author.name == author_name)
+        if author_id is not None:
+            query = query.filter(Author.author_id == author_id)
         if year is not None:
             query = query.filter(Book.year == year)
 

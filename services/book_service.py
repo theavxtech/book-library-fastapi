@@ -14,7 +14,7 @@ class BookService:
         self.author_repo = AuthorRepository(session)
 
     def create(self, payload: BookCreate) -> Book:
-        author = self.author_repo.get_by_name(payload.author_name)
+        author = self.author_repo.get_by_author_id(payload.author_id)
         if not author:
             raise HTTPException(
                 status_code=404,
@@ -23,7 +23,7 @@ class BookService:
         return self.repo.create(
             title=payload.title,
             year=payload.year,
-            author_id=author.id
+            author_id=author.author_id  # ← was author.id, now author.author_id
         )
 
     def get_all(self) -> list[Book]:
@@ -36,7 +36,12 @@ class BookService:
         return book
 
     def search(self, payload: BookSearch) -> list[Book]:
-        if not any([payload.book_id, payload.title, payload.author_name, payload.year]):
+        if not any([
+            payload.book_id is not None,
+            payload.title is not None,
+            payload.author_id is not None,
+            payload.year is not None
+        ]):
             raise HTTPException(
                 status_code=400,
                 detail="Please provide at least one search parameter"
@@ -44,7 +49,7 @@ class BookService:
         books = self.repo.search(
             book_id=payload.book_id,
             title=payload.title,
-            author_name=payload.author_name,
+            author_id=payload.author_id,
             year=payload.year
         )
         if not books:

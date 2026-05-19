@@ -2,12 +2,13 @@ from pydantic import BaseModel
 from typing import Optional
 
 class AuthorCreate(BaseModel):
+    author_id: str
     name: str
     nationality: Optional[str] = None
     birth_year: Optional[int] = None
 
 class AuthorResponse(BaseModel):
-    id: int
+    author_id: str
     name: str
     nationality: Optional[str] = None
     birth_year: Optional[int] = None

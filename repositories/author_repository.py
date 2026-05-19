@@ -15,3 +15,9 @@ class AuthorRepository(BaseRepository[Author]):
             .filter(Author.name == name)
             .first()
         )
+    def get_by_author_id(self, author_id: str) -> Author | None:
+        return (
+            self.session.query(Author)
+            .filter(Author.author_id == author_id)
+            .first()
+        )

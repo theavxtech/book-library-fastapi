@@ -12,10 +12,12 @@ class AuthorService:
         self.repo = AuthorRepository(session)
 
     def create(self, payload: AuthorCreate) -> Author:
-        existing = self.repo.get_by_name(payload.name)
-        if existing:
-            raise HTTPException(status_code=400, detail="Author already exists")
+        existing_id = self.repo.get_by_author_id(payload.author_id)
+        if existing_id:
+            raise HTTPException(status_code=400, detail="Author ID already exists")
+
         return self.repo.create(
+            author_id=payload.author_id,
             name=payload.name,
             nationality=payload.nationality,
             birth_year=payload.birth_year
