@@ -6,15 +6,9 @@ from sqlalchemy.orm import Session
 from db.database import SessionLocal
 from services.book_service import BookService
 from schemas.book import BookCreate, BookResponse , BookSearch
+from utils.dependencies import get_db
 
 router = APIRouter(prefix="/books", tags=["books"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 def get_book_service(db: Session = Depends(get_db)) -> BookService:
     return BookService(db)

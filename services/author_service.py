@@ -22,6 +22,12 @@ class AuthorService:
             nationality=payload.nationality,
             birth_year=payload.birth_year
         )
+    
+    def get_or_404(self, author_id: str) -> Author:
+        author = self.repo.get_by_author_id(author_id)
+        if not author:
+            raise HTTPException(status_code=404, detail="Author not found")
+        return author
 
     def get_all(self) -> list[Author]:
         return self.repo.list()
