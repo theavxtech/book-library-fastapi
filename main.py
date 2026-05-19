@@ -6,8 +6,6 @@ from models.book import Book
 from models.author import Author
 from api.v1.router import router as v1_router
 
-Base.metadata.create_all(bind=engine)
-
 app = FastAPI(
     title="Book Library API",
     description="A simple book library API built with FastAPI and SQLAlchemy",
