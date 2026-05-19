@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from repositories.book_repository import BookRepository
 from repositories.author_repository import AuthorRepository
-from schemas.book import BookCreate
+from schemas.book import BookCreate , BookSearch
 from models.book import Book
 
 
@@ -35,23 +35,17 @@ class BookService:
             raise HTTPException(status_code=404, detail="Book not found")
         return book
 
-    def search(
-        self,
-        book_id: int | None = None,
-        title: str | None = None,
-        author_name: str | None = None,
-        year: int | None = None,
-    ) -> list[Book]:
-        if not any([book_id, title, author_name, year]):
+    def search(self, payload: BookSearch) -> list[Book]:
+        if not any([payload.book_id, payload.title, payload.author_name, payload.year]):
             raise HTTPException(
                 status_code=400,
                 detail="Please provide at least one search parameter"
             )
         books = self.repo.search(
-            book_id=book_id,
-            title=title,
-            author_name=author_name,
-            year=year
+            book_id=payload.book_id,
+            title=payload.title,
+            author_name=payload.author_name,
+            year=payload.year
         )
         if not books:
             raise HTTPException(

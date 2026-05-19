@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from db.database import SessionLocal
 from services.book_service import BookService
-from schemas.book import BookCreate, BookResponse
+from schemas.book import BookCreate, BookResponse , BookSearch
 
 router = APIRouter(prefix="/books", tags=["books"])
 
@@ -26,20 +26,12 @@ def create_book(
 ):
     return service.create(payload)
 
-@router.get("/search", response_model=list[BookResponse])
+@router.post("/search", response_model=list[BookResponse])
 def search_books(
-    book_id: Optional[int] = None,
-    title: Optional[str] = None,
-    author_name: Optional[str] = None,
-    year: Optional[int] = None,
+    payload: BookSearch,
     service: BookService = Depends(get_book_service)
 ):
-    return service.search(
-        book_id=book_id,
-        title=title,
-        author_name=author_name,
-        year=year
-    )
+    return service.search(payload)
 
 @router.get("", response_model=list[BookResponse])
 def get_books(

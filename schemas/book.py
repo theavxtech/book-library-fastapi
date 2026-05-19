@@ -13,5 +13,11 @@ class BookResponse(BaseModel):
     year: int
     author: AuthorResponse
 
+class BookSearch(BaseModel):
+    title: Optional[str] = None
+    author_name: Optional[str] = None
+    year: Optional[int] = None
+    book_id: Optional[int] = None    
+
     class Config:
         from_attributes = True
