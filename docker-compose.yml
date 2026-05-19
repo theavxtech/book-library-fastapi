@@ -26,8 +26,8 @@ services:
       - ${API_PORT_FROM}:${API_PORT}
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${DB_PORT_TO}/${POSTGRES_DB}
-    volumes:
-      - .:/app
+    # volumes:
+    #   - .:/app
     depends_on:
       db:
         condition: service_healthy
