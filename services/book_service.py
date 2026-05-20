@@ -40,7 +40,7 @@ class BookService:
             raise HTTPException(status_code=404, detail="Book not found")
         return book
 
-    def search(self, payload: BookSearch) -> list[Book]:
+    def search(self, payload: BookSearch, page: int, size: int) -> dict:
         if not any([
             payload.book_id is not None,
             payload.title is not None,
@@ -51,15 +51,34 @@ class BookService:
                 status_code=400,
                 detail="Please provide at least one search parameter"
             )
+
+        skip = (page - 1) * size
         books = self.repo.search(
             book_id=payload.book_id,
             title=payload.title,
             author_id=payload.author_id,
-            year=payload.year
+            year=payload.year,
+            skip=skip,
+            limit=size
         )
+
         if not books:
             raise HTTPException(
                 status_code=404,
                 detail="No books found matching your search"
             )
-        return books
+
+        total = self.repo.search_count(
+            book_id=payload.book_id,
+            title=payload.title,
+            author_id=payload.author_id,
+            year=payload.year
+        )
+
+        return {
+            "items": books,
+            "total": total,
+            "page": page,
+            "size": size,
+            "pages": -(-total // size)
+        }

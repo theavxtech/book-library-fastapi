@@ -31,12 +31,13 @@ def create_book(
 ):
     return service.create(payload)
 
-@router.post("/search", response_model=list[BookResponse])
+@router.post("/search", response_model=PaginatedResponse[BookResponse])
 def search_books(
     payload: BookSearch,
+    pagination: Pagination = Depends(Pagination),
     service: BookService = Depends(get_book_service)
 ):
-    return service.search(payload)
+    return service.search(payload , page=pagination.page, size=pagination.size)
 
 @router.get("", response_model=list[BookResponse])
 def get_books(
